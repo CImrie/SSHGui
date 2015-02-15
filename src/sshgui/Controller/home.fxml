@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sshgui.Controller.HomeController">
+   <children>
+      <MenuBar prefHeight="29.0" prefWidth="600.0" AnchorPane.bottomAnchor="371.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+                  <MenuItem fx:id="addressButton" mnemonicParsing="false" onAction="#openMasterPassword" text="Address Book" />
+              <MenuItem fx:id="exitButton" mnemonicParsing="false" onAction="#exitProgram" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Common Tasks">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#fileSearch" text="File Size Search" />
+              </items>
+            </Menu>
+        </menus>
+      </MenuBar>
+      <ToolBar layoutY="29.0" prefHeight="40.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0">
+        <items>
+            <Label prefHeight="16.0" prefWidth="19.0" />
+            <Label prefHeight="16.0" prefWidth="95.0" text="Quick Connect" />
+            <TextField fx:id="quickConnectServer" prefHeight="26.0" prefWidth="102.0" promptText="Server Host" />
+            <TextField fx:id="quickConnectUsername" prefHeight="26.0" prefWidth="102.0" promptText="Username" />
+            <PasswordField fx:id="quickConnectPassword" prefHeight="26.0" prefWidth="101.0" promptText="Password" />
+            <TextField fx:id="quickConnectPort" prefHeight="26.0" prefWidth="62.0" promptText="Port" />
+            <Button fx:id="quickConnectButton" mnemonicParsing="false" onAction="#quickConnect" text="Connect" />
+        </items>
+      </ToolBar>
+    <AnchorPane layoutY="93.0" minHeight="0.0" minWidth="0.0" prefHeight="305.0" prefWidth="143.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="457.0" AnchorPane.topAnchor="93.0">
+         <children>
+            <TreeView fx:id="directoryTree" prefHeight="305.0" prefWidth="143.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <Button layoutX="72.0" layoutY="34.0" mnemonicParsing="false" onAction="#getCurrentDirectory" text="Directory" />
+         </children>
+      </AnchorPane>
+      <SplitPane dividerPositions="0.5, 0.5" layoutX="142.0" layoutY="93.0" orientation="VERTICAL" prefHeight="305.0" prefWidth="458.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="142.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="93.0">
+        <items>
+            <ListView fx:id="explorerList" prefHeight="200.0" prefWidth="200.0" />
+            <TextArea fx:id="console" prefHeight="140.0" prefWidth="458.0" promptText="Output &gt;&gt;" />
+            <TextField fx:id="consoleInput" onAction="#sendCommand" promptText="Input &gt;&gt;" />
+        </items>
+      </SplitPane>
+      <TextField fx:id="breadcrumbs" layoutY="69.0" prefHeight="26.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="69.0" />
+   </children>
+</AnchorPane>
