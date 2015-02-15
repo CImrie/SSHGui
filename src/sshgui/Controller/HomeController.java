@@ -36,7 +36,7 @@ import javafx.stage.Stage;
 public class HomeController implements Initializable {
     private Stage stage;
     private Server connectedServer;
-    private ByteArrayOutputStream bgOut;
+    private OutputStream bgOut;
     /* Menus and Menu Items */
     @FXML
     private MenuItem addressButton;
@@ -79,17 +79,10 @@ public class HomeController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-    	OutputStream out = new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                appendText(String.valueOf((char) b));
-            }
-        };
-        System.setOut(new PrintStream(out, true));
-        this.bgOut = new ByteArrayOutputStream() {
+        this.bgOut = new OutputStream() {
             @Override
             public void write(int b){
-                appendTextBG(String.valueOf((char) b));
+                appendText(String.valueOf((char) b));
             }
         };
         
@@ -101,9 +94,6 @@ public class HomeController implements Initializable {
     
     public void appendText(String str) {
         Platform.runLater(() -> console.appendText(str));
-    }
-    public void appendTextBG(String str) {
-        Platform.runLater(() -> quickConnectUsername.appendText(str));
     }
 
     @FXML
@@ -121,6 +111,7 @@ public class HomeController implements Initializable {
         	Server s = new Server(this.quickConnectServer.getText(), this.quickConnectPort.getText());
         	Login l = new Login(this.quickConnectUsername.getText(), this.quickConnectPassword.getText(), false);
         	s.connect(l);
+        	s.channel.setOutputStream(bgOut);
     		this.connectedServer = s;
     		//Set the password to blank to prevent anyone 'pinching' it
     		this.quickConnectPassword.setText("");
@@ -148,6 +139,7 @@ public class HomeController implements Initializable {
     @FXML
     private void sendCommand() throws JSchException, IOException{
     	try {
+    		this.connectedServer.channel.setOutputStream(bgOut);
 			this.connectedServer.sendCommand(this.consoleInput.getText());
 			this.consoleInput.setText("");
 		} catch (InterruptedException e) {
@@ -157,13 +149,17 @@ public class HomeController implements Initializable {
     
     @FXML
     private void getCurrentDirectory() throws IOException{
-    	this.connectedServer.getCurrentDirectory(bgOut);
+    	//this.connectedServer.channel.setOutputStream(this.bgOut);
+    	try {
+			this.connectedServer.sendCommand("pwd");
+		} catch (JSchException | InterruptedException e) {
+			e.printStackTrace();
+		}
     	/*try {
 			//System.out.println("Last Msg: " + this.connectedServer.readLastBGCommandOutput(bgOut));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}*/
-    	bgOut.reset();
     	this.connectedServer.resetOutputStream();
     }
 }

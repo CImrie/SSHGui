@@ -27,9 +27,9 @@ public class Server {
 	private String host;
 	private int port;
 	private Session session;
-	private ChannelShell channel;
+	public ChannelShell channel;
 	private PrintWriter toChannel;
-	private ByteArrayOutputStream bgOut;
+	private ByteArrayOutputStream bgOut = new ByteArrayOutputStream();
 	
 	public Server(String name, String host, String port){
 		this.name = name;
@@ -58,9 +58,6 @@ public class Server {
 			e.printStackTrace();
 			System.out.println("Error, could not connect");
 		}
-		
-		
-		///////
 		try {
 			openChannel();
 		} catch (JSchException | IOException | InterruptedException e) {
@@ -105,11 +102,6 @@ public class Server {
 		toChannel.println(command);
 	}
 	
-	public void sendCommand(String command, OutputStream out){
-		this.channel.setOutputStream(out);
-		toChannel.println(command);
-	}
-	
 	public void resetOutputStream(){
 		this.channel.setOutputStream(System.out);
 	}
@@ -129,15 +121,16 @@ public class Server {
     	this.toChannel = new PrintWriter(new OutputStreamWriter(this.channel.getOutputStream()), true);
     	
     	this.channel.connect();
-    	readerThread(new InputStreamReader(this.channel.getInputStream()));
+    	readerThread(new InputStreamReader(this.channel.getInputStream()), new PrintWriter(this.bgOut));
 	}
 	
 	/**
 	 * readerThread sets up a timer thread that constantly checks for new output from the server
 	 * shell. It only starts when openChannel() is performed.
 	 * @param tout - an InputStreamReader enclosing the channel InputStream
+	 * @param OutputStream 
 	 */
-	private void readerThread(final InputStreamReader tout)
+	private void readerThread(final InputStreamReader tout, PrintWriter out)
 	{
 	    Thread read2 = new Thread(){
 	    @Override
@@ -152,7 +145,8 @@ public class Server {
 	                        if(toAppend == '\n')
 	                        {
 	                        	//System.out.print(toAppend);
-	                            System.out.println(line.toString());
+	                            //System.out.println(line.toString());
+	                        	out.println(line.toString());
 	                            line.setLength(0);
 	                        }
 	                        else
@@ -160,7 +154,8 @@ public class Server {
 	                    }
 	                } catch (Exception e) {
 	                    e.printStackTrace();
-	                    System.out.println("\n\n\n************error reading character**********\n\n\n");
+	                    //System.out.println("\n\n\n************error reading character**********\n\n\n");
+	                    out.println("\n\n\n************error reading character**********\n\n\n");
 	                }
 	                Thread.sleep(500);
 	            }
@@ -177,14 +172,21 @@ public class Server {
 	    read2.start();
 	}
 	
-	public String getCurrentDirectory(ByteArrayOutputStream out) throws IOException{
-		this.sendCommand("pwd", out);
-		return this.readLastBGCommandOutput(out);
+	public void getCurrentDirectory() throws IOException{
+		try {
+			this.channel.setOutputStream(System.out);
+			this.sendCommand("pwd");
+		} catch (JSchException | InterruptedException e) {
+			e.printStackTrace();
+		}
+		this.channel.setOutputStream(bgOut);
+		//return this.readLastBGCommandOutput();
 	}
 	
-	public String readLastBGCommandOutput(ByteArrayOutputStream out) throws IOException{
+	/*public String readLastBGCommandOutput() throws IOException{
 		//ByteArrayOutputStream out = new ByteArrayOutputStream();
-		ByteArrayInputStream readableOut = new ByteArrayInputStream(out.toByteArray());
+		OutputStream out = this.channel.getOutputStream();
+		ByteArrayInputStream readableOut = new ByteArrayInputStream(out);
 		Scanner s = new Scanner(readableOut);
 		
 		String finalMsg = null;
@@ -193,6 +195,6 @@ public class Server {
 		}
 		
 		return finalMsg;
-	}
+	}*/
 
 }
