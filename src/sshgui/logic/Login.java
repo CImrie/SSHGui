@@ -19,13 +19,12 @@ public class Login {
 	private String username;
 	private String password;
 	private String masterHash;
-	private Key key;
 	
-	public Login(String username, String password, boolean encrypt){
+	public Login(String username, String password, boolean encrypt, String masterPassword){
 		if (encrypt){
 			try {
-				this.username = encrypt(username);
-				this.password = encrypt(password);
+				this.username = username;
+				this.password = encrypt(password, masterPassword);
 			} catch (InvalidKeyException | NoSuchAlgorithmException
 					| NoSuchPaddingException | UnsupportedEncodingException
 					| IllegalBlockSizeException | BadPaddingException e) {
@@ -51,10 +50,10 @@ public class Login {
 	 * @throws BadPaddingException 
 	 * @throws IllegalBlockSizeException 
 	 */
-	public String encrypt(String message) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException{
+	public String encrypt(String message, String masterPassword) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException{
 		// Get a cipher object.
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-		cipher.init(Cipher.ENCRYPT_MODE, this.key);
+		cipher.init(Cipher.ENCRYPT_MODE, this.getMasterKey(masterPassword));
 	 
 		// Gets the raw bytes to encrypt, UTF8 is needed for
 		// having a standard character set
@@ -82,11 +81,9 @@ public class Login {
 	 * @throws NoSuchPaddingException
 	 */
 	public String decrypt(String message, String masterPassword) throws IllegalBlockSizeException, BadPaddingException, IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException{
-		//hash masterPassword
-		this.hashMasterPassword(masterPassword);
 		// Get a cipher object.
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-		cipher.init(Cipher.DECRYPT_MODE, this.key);
+		cipher.init(Cipher.DECRYPT_MODE, this.getMasterKey(masterPassword));
 	 
 		//decode the BASE64 coded message
 		BASE64Decoder decoder = new BASE64Decoder();
@@ -105,12 +102,14 @@ public class Login {
 	 * It then stores the hash in a file that is read upon startup.
 	 * @param masterPassword
 	 */
-	public void hashMasterPassword(String masterPassword){
-		String hashed = BCrypt.hashpw(masterPassword, BCrypt.gensalt());
-		this.masterHash = hashed;
-		//store the hash in a file to use as encryption/decryption key
-		SecretKey key = new SecretKeySpec(hashed.getBytes(), "AES");
-		this.key = key;
+	public SecretKey getMasterKey(String masterPassword){
+		byte[] trimmed = new byte[16];
+		byte[] origMaster = masterPassword.getBytes();
+		for (int i = 0; i < trimmed.length; i++){
+			trimmed[i] = origMaster[i];
+		}
+		SecretKey key = new SecretKeySpec(trimmed, "AES");
+		return key;
 	}
 	
 	public static String getHash(String secretMessage){
@@ -141,15 +140,6 @@ public class Login {
 
 	public String getMasterHash() {
 		return masterHash;
-	}
-
-	public Key getKey() {
-		return key;
-	}
-
-
-	public void setKey(Key key) {
-		this.key = key;
 	}
 	
 	//have master password and use the hash of this as an encryption/decryption key

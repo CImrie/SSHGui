@@ -6,17 +6,34 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sshgui.Controller.AddressBookController">
    <children>
-      <TableView layoutX="26.0" layoutY="143.0" prefHeight="237.0" prefWidth="305.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="26.0" AnchorPane.rightAnchor="269.0" AnchorPane.topAnchor="143.0">
-        <columns>
-          <TableColumn prefWidth="75.0" text="C1" />
-          <TableColumn prefWidth="75.0" text="C2" />
-        </columns>
-      </TableView>
-      <Button layoutX="476.0" layoutY="323.0" mnemonicParsing="false" text="Save Server" />
-      <Button layoutX="476.0" layoutY="354.0" mnemonicParsing="false" text="Delete Server" />
-      <Label layoutX="344.0" layoutY="32.0" text="Server Name/Description" />
-      <Label layoutX="344.0" layoutY="76.0" text="Host" />
-      <Label layoutX="344.0" layoutY="117.0" text="Username" />
-      <Label layoutX="344.0" layoutY="162.0" text="Password" />
+      <AnchorPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TableView fx:id="serverTable" prefHeight="222.0" prefWidth="600.0" AnchorPane.bottomAnchor="178.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <columns>
+                <TableColumn fx:id="serverName" prefWidth="119.0" text="Name" />
+                <TableColumn fx:id="serverHost" minWidth="0.0" prefWidth="161.0" text="Host" />
+                  <TableColumn fx:id="serverUser" prefWidth="169.0" text="User" />
+                  <TableColumn fx:id="serverPass" minWidth="0.0" text="Pass" />
+                  <TableColumn fx:id="serverPort" prefWidth="70.0" resizable="false" text="Port" />
+              </columns>
+            </TableView>
+            <Button layoutX="488.0" layoutY="360.0" mnemonicParsing="false" text="Delete Server" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="14.0" layoutY="229.0" AnchorPane.bottomAnchor="54.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="229.0">
+         <children>
+            <Label layoutX="89.0" layoutY="66.0" text="Username" />
+            <Label layoutY="5.0" text="Server Name/Description" />
+            <Label layoutX="90.0" layoutY="96.0" text="Password" />
+            <Label layoutX="120.0" layoutY="35.0" text="Host" />
+            <TextField fx:id="nameField" layoutX="158.0" />
+            <TextField fx:id="hostField" layoutX="158.0" layoutY="30.0" />
+            <TextField fx:id="portField" layoutX="330.0" layoutY="30.0" prefHeight="26.0" prefWidth="90.0" promptText="Port" />
+            <TextField fx:id="userField" layoutX="158.0" layoutY="60.0" />
+            <PasswordField fx:id="passField" layoutX="158.0" layoutY="91.0" />
+            <Button layoutX="330.0" layoutY="91.0" mnemonicParsing="false" onAction="#saveServer" text="Save Server" />
+            <Button layoutX="500.0" layoutY="1.0" mnemonicParsing="false" onAction="#connectToAddress" text="Connect" />
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

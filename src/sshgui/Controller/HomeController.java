@@ -5,6 +5,7 @@
  */
 package sshgui.Controller;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,6 +17,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
@@ -38,8 +41,9 @@ public class HomeController implements Initializable {
     private Stage stage;
     private Server connectedServer;
     private OutputStream consoleOut;
+    //private ByteArrayOutputStream hiddenOut = new ByteArrayOutputStream();
     private OutputStream hiddenOut;
-    private String hiddenStr = "";
+    private String hidden = "";
 
     /* Menus and Menu Items */
     @FXML
@@ -90,14 +94,14 @@ public class HomeController implements Initializable {
             public void write(int b){
                 appendText(String.valueOf((char) b));
             }
-        };
+        };        
         
         this.hiddenOut = new OutputStream() {
             @Override
             public void write(int b){
                 appendTextHidden(String.valueOf((char) b));
             }
-        };
+        };  
         
         this.quickConnectServer.setText("connorimrie.me");
         this.quickConnectUsername.setText("root");
@@ -110,7 +114,7 @@ public class HomeController implements Initializable {
     }
     
     public void appendTextHidden(String str) {
-    	Platform.runLater(() -> console.appendText(str));
+    	Platform.runLater(() -> hidden = hidden + str);
     }
 
     @FXML
@@ -126,7 +130,7 @@ public class HomeController implements Initializable {
     			){
     		//create server
         	Server s = new Server(this.quickConnectServer.getText(), this.quickConnectPort.getText());
-        	Login l = new Login(this.quickConnectUsername.getText(), this.quickConnectPassword.getText(), false);
+        	Login l = new Login(this.quickConnectUsername.getText(), this.quickConnectPassword.getText(), false, null);
         	s.connect(l);
         	s.setOutputStream(this.consoleOut);
     		this.connectedServer = s;
@@ -158,16 +162,25 @@ public class HomeController implements Initializable {
     	try {
     		this.connectedServer.setOutputStream(this.consoleOut);
 			this.connectedServer.sendCommand(this.consoleInput.getText());
-			this.consoleInput.setText("");
+			this.consoleInput.setText("");		
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
     }
     
     @FXML
-    private void getCurrentDirectory() throws IOException{
+    private void getCurrentDirectory() throws IOException {
     	this.sendHiddenCommand("pwd");
-    	//this.breadcrumbs.setText(hiddenStr);
+
+    	try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.breadcrumbs.setText(this.hidden);
+		//System.out.println("---" + this.hiddenOut.toString());
+		System.out.println(this.hidden);
     }
     
     private void sendHiddenCommand(String command){

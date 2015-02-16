@@ -4,27 +4,37 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Set;
+
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 
 public class AddressBook {
-	private HashMap<Server, Login> addresses;
+	private ArrayList<Address> addresses = new ArrayList<Address>();
 	private String addressbookFileName = "addressbook.xml";
-	
+
 	public AddressBook(){
 		this.loadFromXML();
+		this.addresses.add(new Address("test", "test", 22, "test", "test"));
 	}
 	
 	public void storeInXML(){
-		Collection<Server> keys = this.addresses.keySet();
 		Properties prop = new Properties();
-		for (Server key : keys){
-			prop.setProperty(key.getName() + "_Name", key.getName());
-			prop.setProperty(key.getName() + "_Host", key.getHost());
-			prop.setProperty(key.getName() + "_Port", Integer.toString(key.getPort()));
-			prop.setProperty(key.getName() + "_User", this.addresses.get(key).getUsername());
-			prop.setProperty(key.getName() + "_Pass", this.addresses.get(key).getPassword());
+		for (int i = 0; i < this.addresses.size(); i++){
+			Address temp = this.addresses.get(i);
+			prop.setProperty(temp.getServerName() + "_Name", temp.getServerName());
+			prop.setProperty(temp.getServerName() + "_Host", temp.getServerHost());
+			prop.setProperty(temp.getServerName() + "_Port", Integer.toString(temp.getServerPort()));
+			prop.setProperty(temp.getServerName() + "_User", temp.getServerUser());
+			prop.setProperty(temp.getServerName() + "_Pass", temp.getServerPass());
 		}
 		FileOutputStream fos;
 		try {
@@ -72,15 +82,20 @@ public class AddressBook {
 			if(currentKey.contains("_Pass")){
 				pass = prop.getProperty(currentKey);
 			}
-			Server tempServer = new Server(name, host, port);
-			Login tempLogin = new Login(user, pass, false);
-			addresses.put(tempServer, tempLogin);
+			//Server tempServer = new Server(name, host, port);
+			//Login tempLogin = new Login(user, pass, false);
+			//addresses.put(tempServer, tempLogin);
+			Address tempAddress = new Address(name, host, Integer.parseInt(port), user, pass);
+			this.addresses.add(tempAddress);
 		}
-		
-		this.addresses = addresses;
 	}
 	
-	public void addServer(Server server, Login login){
-		this.addresses.put(server, login);
+	public void addAddress(Address address){
+		this.addresses.add(address);
 	}
+	
+	public ArrayList<Address> getList(){
+		return this.addresses;
+	}
+	
 }

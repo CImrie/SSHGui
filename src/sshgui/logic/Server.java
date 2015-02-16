@@ -16,6 +16,9 @@ import java.io.PrintWriter;
 import java.nio.Buffer;
 import java.util.Scanner;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
@@ -34,7 +37,7 @@ public class Server {
 	public Server(String name, String host, String port){
 		this.name = name;
 		this.host = host;
-		this.port = Integer.getInteger(port);
+		this.port = Integer.parseInt(port);
 	}
 	
 	public Server(String host, String port){
@@ -132,7 +135,7 @@ public class Server {
     	ChannelShell channel=(ChannelShell) this.session.openChannel("shell");
     	this.channel = channel;
     	this.channel.setPtyType("dumb");
-    	
+
     	this.toChannel = new PrintWriter(new OutputStreamWriter(this.channel.getOutputStream()), true);
     	
     	this.channel.connect();
@@ -185,12 +188,28 @@ public class Server {
 	    read2.start();
 	}
 	
-	public void getCurrentDirectory() throws IOException{
-		try {
-			this.sendCommand("pwd");
-		} catch (JSchException | InterruptedException e) {
-			e.printStackTrace();
+	public String getLast() throws IOException{
+		InputStream inputStream = this.channel.getInputStream(); 
+
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		String line;
+
+		while ((line = bufferedReader.readLine()) != null) 
+		{
+
+			stringBuilder.append(line);
+			stringBuilder.append('\n');
+
 		}
+
+		return stringBuilder.toString();   
+	}
+	
+	public StringProperty getObservableName(){
+		return (new SimpleStringProperty(this.name));
 	}
 
 }
