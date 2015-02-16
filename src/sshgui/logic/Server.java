@@ -29,7 +29,7 @@ public class Server {
 	private Session session;
 	public ChannelShell channel;
 	private PrintWriter toChannel;
-	private ByteArrayOutputStream bgOut = new ByteArrayOutputStream();
+	//private ByteArrayOutputStream consoleOut = new ByteArrayOutputStream();
 	
 	public Server(String name, String host, String port){
 		this.name = name;
@@ -42,6 +42,11 @@ public class Server {
 		this.port = Integer.parseInt(port);
 	}
 	
+	/**
+	 * connect() initiates the connection to the server, given a login (supplied in GUI).
+	 * It opens a shell channel.
+	 * @param login
+	 */
 	public void connect(Login login) {
 		JSch jsch=new JSch();
 		Session session;
@@ -52,15 +57,15 @@ public class Server {
 			session.setUserInfo(lui);
 			session.connect();
 			this.session = session;
+			openChannel();
 			System.out.println("Connected");
 		} 
 		catch (JSchException e) {
 			e.printStackTrace();
 			System.out.println("Error, could not connect");
-		}
-		try {
-			openChannel();
-		} catch (JSchException | IOException | InterruptedException e) {
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -97,13 +102,23 @@ public class Server {
 		this.session = session;
 	}
 
+	/**
+	 * sendCommand() writes the command input to a print stream that feeds in to the shell channel.
+	 * @param command
+	 * @throws JSchException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public void sendCommand(String command) throws JSchException, IOException, InterruptedException{
-		//this.channel.setOutputStream(System.out);
 		toChannel.println(command);
 	}
 	
-	public void resetOutputStream(){
-		this.channel.setOutputStream(System.out);
+	public void setOutputStream(ByteArrayOutputStream out){
+		this.channel.setOutputStream(out);
+	}
+	
+	public void setOutputStream(OutputStream out){
+		this.channel.setOutputStream(out);
 	}
 	
 	/**
@@ -121,7 +136,7 @@ public class Server {
     	this.toChannel = new PrintWriter(new OutputStreamWriter(this.channel.getOutputStream()), true);
     	
     	this.channel.connect();
-    	readerThread(new InputStreamReader(this.channel.getInputStream()), new PrintWriter(this.bgOut));
+    	//readerThread(new InputStreamReader(this.channel.getInputStream()), new PrintWriter(this.consoleOut));
 	}
 	
 	/**
@@ -130,7 +145,7 @@ public class Server {
 	 * @param tout - an InputStreamReader enclosing the channel InputStream
 	 * @param OutputStream 
 	 */
-	private void readerThread(final InputStreamReader tout, PrintWriter out)
+	public void readerThread(final InputStreamReader tout, PrintWriter out)
 	{
 	    Thread read2 = new Thread(){
 	    @Override
@@ -144,8 +159,6 @@ public class Server {
 	                        toAppend = (char) tout.read();
 	                        if(toAppend == '\n')
 	                        {
-	                        	//System.out.print(toAppend);
-	                            //System.out.println(line.toString());
 	                        	out.println(line.toString());
 	                            line.setLength(0);
 	                        }
@@ -160,7 +173,7 @@ public class Server {
 	                Thread.sleep(500);
 	            }
 	        }catch (Exception ex) {
-	            System.out.println(ex);
+	            out.println(ex);
 	            try{
 	                tout.close();
 	            }
@@ -174,27 +187,10 @@ public class Server {
 	
 	public void getCurrentDirectory() throws IOException{
 		try {
-			this.channel.setOutputStream(System.out);
 			this.sendCommand("pwd");
 		} catch (JSchException | InterruptedException e) {
 			e.printStackTrace();
 		}
-		this.channel.setOutputStream(bgOut);
-		//return this.readLastBGCommandOutput();
 	}
-	
-	/*public String readLastBGCommandOutput() throws IOException{
-		//ByteArrayOutputStream out = new ByteArrayOutputStream();
-		OutputStream out = this.channel.getOutputStream();
-		ByteArrayInputStream readableOut = new ByteArrayInputStream(out);
-		Scanner s = new Scanner(readableOut);
-		
-		String finalMsg = null;
-		while(s.hasNext()){
-			finalMsg = s.nextLine();
-		}
-		
-		return finalMsg;
-	}*/
 
 }

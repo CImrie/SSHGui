@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -36,7 +37,10 @@ import javafx.stage.Stage;
 public class HomeController implements Initializable {
     private Stage stage;
     private Server connectedServer;
-    private OutputStream bgOut;
+    private OutputStream consoleOut;
+    private OutputStream hiddenOut;
+    private String hiddenStr = "";
+
     /* Menus and Menu Items */
     @FXML
     private MenuItem addressButton;
@@ -65,6 +69,8 @@ public class HomeController implements Initializable {
     private ListView<String> explorerList;
     @FXML
     private TreeView<String> directoryTree;
+    @FXML
+    private TextField breadcrumbs;
     
     public void setStage(Stage stage){
         this.stage = stage;
@@ -79,10 +85,17 @@ public class HomeController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        this.bgOut = new OutputStream() {
+        this.consoleOut = new OutputStream() {
             @Override
             public void write(int b){
                 appendText(String.valueOf((char) b));
+            }
+        };
+        
+        this.hiddenOut = new OutputStream() {
+            @Override
+            public void write(int b){
+                appendTextHidden(String.valueOf((char) b));
             }
         };
         
@@ -94,6 +107,10 @@ public class HomeController implements Initializable {
     
     public void appendText(String str) {
         Platform.runLater(() -> console.appendText(str));
+    }
+    
+    public void appendTextHidden(String str) {
+    	Platform.runLater(() -> console.appendText(str));
     }
 
     @FXML
@@ -111,7 +128,7 @@ public class HomeController implements Initializable {
         	Server s = new Server(this.quickConnectServer.getText(), this.quickConnectPort.getText());
         	Login l = new Login(this.quickConnectUsername.getText(), this.quickConnectPassword.getText(), false);
         	s.connect(l);
-        	s.channel.setOutputStream(bgOut);
+        	s.setOutputStream(this.consoleOut);
     		this.connectedServer = s;
     		//Set the password to blank to prevent anyone 'pinching' it
     		this.quickConnectPassword.setText("");
@@ -139,7 +156,7 @@ public class HomeController implements Initializable {
     @FXML
     private void sendCommand() throws JSchException, IOException{
     	try {
-    		this.connectedServer.channel.setOutputStream(bgOut);
+    		this.connectedServer.setOutputStream(this.consoleOut);
 			this.connectedServer.sendCommand(this.consoleInput.getText());
 			this.consoleInput.setText("");
 		} catch (InterruptedException e) {
@@ -149,17 +166,18 @@ public class HomeController implements Initializable {
     
     @FXML
     private void getCurrentDirectory() throws IOException{
-    	//this.connectedServer.channel.setOutputStream(this.bgOut);
-    	try {
-			this.connectedServer.sendCommand("pwd");
+    	this.sendHiddenCommand("pwd");
+    	//this.breadcrumbs.setText(hiddenStr);
+    }
+    
+    private void sendHiddenCommand(String command){
+       	try {
+    		this.connectedServer.channel.setOutputStream(this.hiddenOut);
+			this.connectedServer.sendCommand(command);
 		} catch (JSchException | InterruptedException e) {
 			e.printStackTrace();
-		}
-    	/*try {
-			//System.out.println("Last Msg: " + this.connectedServer.readLastBGCommandOutput(bgOut));
 		} catch (IOException e) {
 			e.printStackTrace();
-		}*/
-    	this.connectedServer.resetOutputStream();
+		}
     }
 }
