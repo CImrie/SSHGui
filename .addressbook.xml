@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Address Book</comment>
+<entry key="DigitalOcean_User">root</entry>
+<entry key="DigitalOcean_Port">22</entry>
+<entry key="DigitalOcean_Name">DigitalOcean</entry>
+<entry key="DigitalOcean_Pass">ha$R1014@</entry>
+<entry key="DigitalOcean_Host">connorimrie.me</entry>
+<entry key="DigitalOcean_IV">vAKDBMpOlacwxbaTQIKDoA==</entry>
+</properties>

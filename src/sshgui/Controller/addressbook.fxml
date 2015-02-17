@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
@@ -17,7 +18,12 @@
                   <TableColumn fx:id="serverPort" prefWidth="70.0" resizable="false" text="Port" />
               </columns>
             </TableView>
-            <Button layoutX="488.0" layoutY="360.0" mnemonicParsing="false" text="Delete Server" />
+            <Button layoutX="488.0" layoutY="360.0" mnemonicParsing="false" onAction="#deleteServer" text="Delete Server" />
+            <Button layoutX="271.0" layoutY="360.0" mnemonicParsing="false" onAction="#storeXML" prefHeight="26.0" prefWidth="163.0" style="-fx-background-color: #00CCFF;;" text="Save All Changes" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
       <AnchorPane layoutX="14.0" layoutY="229.0" AnchorPane.bottomAnchor="54.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="229.0">
@@ -26,11 +32,11 @@
             <Label layoutY="5.0" text="Server Name/Description" />
             <Label layoutX="90.0" layoutY="96.0" text="Password" />
             <Label layoutX="120.0" layoutY="35.0" text="Host" />
-            <TextField fx:id="nameField" layoutX="158.0" />
-            <TextField fx:id="hostField" layoutX="158.0" layoutY="30.0" />
+            <TextField fx:id="nameField" layoutX="158.0" promptText="Server Name" />
+            <TextField fx:id="hostField" layoutX="158.0" layoutY="30.0" promptText="Host" />
             <TextField fx:id="portField" layoutX="330.0" layoutY="30.0" prefHeight="26.0" prefWidth="90.0" promptText="Port" />
-            <TextField fx:id="userField" layoutX="158.0" layoutY="60.0" />
-            <PasswordField fx:id="passField" layoutX="158.0" layoutY="91.0" />
+            <TextField fx:id="userField" layoutX="158.0" layoutY="60.0" promptText="Username" />
+            <PasswordField fx:id="passField" layoutX="158.0" layoutY="91.0" promptText="Password" />
             <Button layoutX="330.0" layoutY="91.0" mnemonicParsing="false" onAction="#saveServer" text="Save Server" />
             <Button layoutX="500.0" layoutY="1.0" mnemonicParsing="false" onAction="#connectToAddress" text="Connect" />
          </children>

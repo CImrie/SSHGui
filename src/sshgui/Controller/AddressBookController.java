@@ -5,11 +5,21 @@
  */
 package sshgui.Controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import com.jcraft.jsch.JSchException;
+import com.thoughtworks.xstream.XStream;
 
 import sshgui.GUIAddressBook;
 import sshgui.logic.*;
@@ -31,9 +41,10 @@ import javafx.util.Callback;
  */
 public class AddressBookController implements Initializable {
     private Stage stage;
-    private String masterHash; 
+    private String masterPassword; 
     private AddressBook book;
     private ObservableList<Address> addressBook;
+    private HomeController home;
     /* Menus and Menu Items */
 
     /* Text/Password Fields */
@@ -81,7 +92,6 @@ public class AddressBookController implements Initializable {
     	AddressBook book = new AddressBook();
     	this.book = book;
     	
-    	
     	assert this.serverTable != null : "fx:id=\"tableview\" was not injected: check your FXML file 'UserMaster.fxml'.";
         serverName.setCellValueFactory(
         	new PropertyValueFactory<Address,String>("serverName"));
@@ -95,29 +105,21 @@ public class AddressBookController implements Initializable {
         		new PropertyValueFactory<Address, Integer>("serverPort"));
         serverUser.setCellValueFactory(
         		new PropertyValueFactory<Address, String>("serverUser"));
-        
-        
-        
-       /*colPassword.setCellValueFactory(                
-           new PropertyValueFactory<Usermaster,String>("userPassword"));
-       colUserType.setCellValueFactory(
-           new PropertyValueFactory<Usermaster,String>("userType"));        
-       colPhoto.setCellValueFactory(
-           new PropertyValueFactory<Object,ImageView>("userPhoto"));*/
         this.populateAddressBook();
+        this.loadXML();
     }    
 
     @FXML
     private void exitProgram() {
-    	Platform.exit();
+    	stage.close();
     }
     
     private String getMasterPassword(){
-    	return this.masterHash;
+    	return this.masterPassword;
     }
     
-    public void setMasterHash(String hash){
-    	this.masterHash = hash;
+    public void setMasterPassword(String pass){
+    	this.masterPassword = pass;
     }
     
     private void populateAddressBook(){
@@ -126,15 +128,79 @@ public class AddressBookController implements Initializable {
     }
     
     @FXML
-    public void saveServer(){
+    public void saveServer() throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IOException{
     	Server s = new Server(nameField.getText(), hostField.getText(), portField.getText());
-    	Login l = new Login(userField.getText(), passField.getText(), true, this.masterHash);
-    	Address a = new Address(s.getName(), s.getHost(), s.getPort(), l.getUsername(), l.getPassword());
+    	Login l = new Login(userField.getText(), passField.getText(), false, this.masterPassword);
+    	Address a = new Address(s.getName(), s.getHost(), s.getPort(), l.getUsername(), l.getEncryptedPassword(), l.getIv());
     	this.addressBook.add(a);
     }
 
     @FXML
     public void connectToAddress(){
-    	
+    	Address a = serverTable.getSelectionModel().getSelectedItem();
+    	connect(a);
     }
+    
+    @FXML
+    public void deleteServer(){
+    	this.addressBook.remove(serverTable.getSelectionModel().getSelectedItem());
+    }
+    
+	private void connect(Address a){
+		Server s = new Server(a.getServerName(), a.getServerHost(), String.valueOf(a.getServerPort()));
+		Login l = new Login(a.getServerUser(), a.getServerPass(), true, this.masterPassword);
+		l.setIv(a.getIV());
+		home.connectAddress(s, l);
+		this.stage.close();
+	}
+	
+	public void setHomeController(HomeController home){
+		this.home = home;
+	}
+	
+	@FXML
+	private void storeXML(){
+		XStream xstream = new XStream();
+		  xstream.alias("address", Address.class);
+
+		  // Convert ObservableList to a normal ArrayList
+		  ArrayList<Address> addressList = new ArrayList<>(this.addressBook);
+
+		  String xml = xstream.toXML(addressList);
+		  try {
+			File file = new File(new File("").getAbsolutePath() + "/addressbook.xml");
+		    FileUtil.saveFile(xml, file );
+
+		    //setPersonFilePath(file);
+		  } catch (Exception e) { // catches ANY exception
+			  System.out.println("ERROR");
+		    /*Dialogs.showErrorDialog(primaryStage,
+		        "Could not save data to file:\n" + file.getPath(),
+		        "Could not save data", "Error", e);*/
+		  }
+		  finally{
+			  stage.close();
+		  }
+	}
+	
+	private void loadXML(){
+		XStream xstream = new XStream();
+		  xstream.alias("address", Address.class);
+
+		  try {
+			File file = new File(new File("").getAbsolutePath() + "/addressbook.xml");
+		    String xml = FileUtil.readFile(file);
+
+		    ArrayList<Address> addressList = (ArrayList<Address>) xstream.fromXML(xml);
+
+		    this.addressBook.clear();
+		    this.addressBook.addAll(addressList);
+
+		  } catch (Exception e) { // catches ANY exception
+			  System.out.println("ERROR");
+		    /*Dialogs.showErrorDialog(primaryStage,
+		        "Could not load data from file:\n" + file.getPath(),
+		        "Could not load data", "Error", e);*/
+		  }
+	}
 }

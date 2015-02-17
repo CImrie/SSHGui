@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Address Book</comment>
+<entry key="test_User"/>
+<entry key="test_Port">22</entry>
+<entry key="test_Name">test</entry>
+<entry key="test_Pass"/>
+<entry key="test_Host"/>
+<entry key="test_IV">IeI0umdPWyfnE0GYBI9EjQ==</entry>
+</properties>

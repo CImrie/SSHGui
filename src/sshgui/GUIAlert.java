@@ -18,20 +18,21 @@ import javafx.stage.Stage;
  *
  * @author connorimrie
  */
-public class GUIMasterPassword {
+public class GUIAlert {
     
-    public GUIMasterPassword(HomeController home) throws IOException{
-        FXMLLoader loader = new FXMLLoader(MasterPasswordController.class.getResource("/sshgui/Controller/masterPassword.fxml"));
+    public GUIAlert(String message, String details) throws IOException{
+        FXMLLoader loader = new FXMLLoader(AlertController.class.getResource("/sshgui/Controller/alert.fxml"));
         Parent root = (Parent)loader.load();
         Scene scene = new Scene(root);
         Stage secondStage = new Stage();
 
         
-        MasterPasswordController controller = (MasterPasswordController)loader.getController();
+        AlertController controller = (AlertController)loader.getController();
         controller.setStage(secondStage);
-        controller.setHomeController(home);
-    
-        secondStage.setTitle("SSHGui - Server Address Book");
+        controller.setMessage(message);
+        controller.setDetails(details);
+        
+        secondStage.setTitle("SSHGui - Alert");
         secondStage.setScene(scene);
         secondStage.show();
     }

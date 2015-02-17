@@ -6,6 +6,7 @@
 package sshgui;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import sshgui.Controller.AddressBookController;
 import sshgui.Controller.HomeController;
@@ -23,7 +24,7 @@ import javafx.stage.Stage;
  */
 public class GUIAddressBook{
     
-	public GUIAddressBook(String masterPassword) throws IOException{
+	public GUIAddressBook(String masterPassword, HomeController home) throws IOException{
     	
     	FXMLLoader loader = new FXMLLoader(AddressBookController.class.getResource("/sshgui/Controller/addressbook.fxml"));
         Parent root = (Parent)loader.load();
@@ -32,9 +33,9 @@ public class GUIAddressBook{
 
         
         AddressBookController controller = (AddressBookController)loader.getController();
-        controller.setMasterHash(Login.getHash(masterPassword));
+		controller.setMasterPassword(masterPassword);
         controller.setStage(secondStage);
-    
+        controller.setHomeController(home);
         secondStage.setTitle("SSHGui - Server Address Book");
         secondStage.setScene(scene);
         secondStage.show();

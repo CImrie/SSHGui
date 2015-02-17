@@ -25,25 +25,14 @@ import javafx.stage.Stage;
  *
  * @author connorimrie
  */
-public class MasterPasswordController implements Initializable {
-    private Stage stage;
-    /* Menus and Menu Items */
+public class AlertController implements Initializable {
+	private Stage stage;
 
-    /* Text/Password Fields */
-    @FXML
-    private TextField masterPassword;
-    /* Buttons */
-	private HomeController home;
-
-    
-    public void setStage(Stage stage){
-        this.stage = stage;
-    }
-    
-    public Stage getStage(){
-    	return this.stage;
-    }
-
+	@FXML
+	private Label messageLabel;
+	@FXML
+	private Label detailsLabel;
+	
     /**
      * Initializes the controller class.
      */
@@ -51,20 +40,26 @@ public class MasterPasswordController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     
     }    
+    
+    public void setStage(Stage stage){
+    	this.stage = stage;
+    }
+    
+    public Stage getStage(){
+    	return this.stage;
+    }
+    
+    public void setMessage(String message){
+    	this.messageLabel.setText(message);
+    }
+    
+    public void setDetails(String details){
+    	this.detailsLabel.setText(details);
+    }
 
     @FXML
     private void exitProgram() {
     	stage.close();
-    }
-    
-    @FXML
-    private void addressBookLogin() throws IOException{
-    	new GUIAddressBook(this.masterPassword.getText(), this.home);
-    	stage.close();
-    }
-    
-    public void setHomeController(HomeController home){
-    	this.home = home;
     }
 
 }

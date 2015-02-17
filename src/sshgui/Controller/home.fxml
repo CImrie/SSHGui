@@ -26,9 +26,15 @@
               <MenuItem mnemonicParsing="false" text="About" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Common Tasks">
+            <Menu fx:id="commonTasksMenu" mnemonicParsing="false" text="Common Tasks">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#fileSearch" text="File Size Search" />
+                  <Menu mnemonicParsing="false" text="File Size Search">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#fileSearch15" text="Larger than 15MB" />
+                        <MenuItem mnemonicParsing="false" onAction="#fileSearch50" text="Larger than 50MB" />
+                        <MenuItem mnemonicParsing="false" onAction="#fileSearch100" text="Larger than 100MB" />
+                    </items>
+                  </Menu>
               </items>
             </Menu>
         </menus>
@@ -47,7 +53,7 @@
     <AnchorPane layoutY="93.0" minHeight="0.0" minWidth="0.0" prefHeight="305.0" prefWidth="143.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="457.0" AnchorPane.topAnchor="93.0">
          <children>
             <TreeView fx:id="directoryTree" prefHeight="305.0" prefWidth="143.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <Button layoutX="72.0" layoutY="34.0" mnemonicParsing="false" onAction="#getCurrentDirectory" text="Directory" />
+            <Button fx:id="directoryButton" layoutX="72.0" layoutY="34.0" mnemonicParsing="false" onAction="#getCurrentDirectory" text="Directory" />
          </children>
       </AnchorPane>
       <SplitPane dividerPositions="0.5, 0.5" layoutX="142.0" layoutY="93.0" orientation="VERTICAL" prefHeight="305.0" prefWidth="458.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="142.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="93.0">
@@ -57,6 +63,6 @@
             <TextField fx:id="consoleInput" onAction="#sendCommand" promptText="Input &gt;&gt;" />
         </items>
       </SplitPane>
-      <TextField fx:id="breadcrumbs" layoutY="69.0" prefHeight="26.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="69.0" />
+      <TextField fx:id="breadcrumbs" layoutY="69.0" prefHeight="26.0" prefWidth="600.0" promptText="This is where the current directory path will go" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="69.0" />
    </children>
 </AnchorPane>

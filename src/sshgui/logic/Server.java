@@ -14,7 +14,14 @@ import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.Buffer;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -49,28 +56,27 @@ public class Server {
 	 * connect() initiates the connection to the server, given a login (supplied in GUI).
 	 * It opens a shell channel.
 	 * @param login
+	 * @throws JSchException 
+	 * @throws InterruptedException 
+	 * @throws IOException 
+	 * @throws InvalidAlgorithmParameterException 
+	 * @throws NoSuchPaddingException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws BadPaddingException 
+	 * @throws IllegalBlockSizeException 
+	 * @throws InvalidKeyException 
 	 */
-	public void connect(Login login) {
+	public void connect(Login login) throws JSchException, IOException, InterruptedException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException {
 		JSch jsch=new JSch();
 		Session session;
-		try {
-			session = jsch.getSession(login.getUsername(), this.host, this.port);
-			session.setPassword(login.getPassword());
-			LocalUserInfo lui=new LocalUserInfo();
-			session.setUserInfo(lui);
-			session.connect();
-			this.session = session;
-			openChannel();
-			System.out.println("Connected");
-		} 
-		catch (JSchException e) {
-			e.printStackTrace();
-			System.out.println("Error, could not connect");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		session = jsch.getSession(login.getUsername(), this.host, this.port);
+		session.setPassword(login.getPassword());
+		LocalUserInfo lui=new LocalUserInfo();
+		session.setUserInfo(lui);
+		session.connect();
+		this.session = session;
+		openChannel();
+		System.out.println("Connected");
 	}
 
 	public String getName() {
@@ -121,7 +127,9 @@ public class Server {
 	}
 	
 	public void setOutputStream(OutputStream out){
-		this.channel.setOutputStream(out);
+		if (this.channel != null){
+			this.channel.setOutputStream(out);
+		}
 	}
 	
 	/**
@@ -210,6 +218,10 @@ public class Server {
 	
 	public StringProperty getObservableName(){
 		return (new SimpleStringProperty(this.name));
+	}
+	
+	public void setClassOutputStream(PrintStream out){
+		System.setOut(out);
 	}
 
 }

@@ -6,13 +6,15 @@ public class Address {
 	private int serverPort;
 	private String serverUser;
 	private String serverPass;
+	private byte[] iv;
 
-	public Address(String name, String host, int port, String username, String passHash){
+	public Address(String name, String host, int port, String username, String passHash, byte[] iv){
 		this.serverName = name;
 		this.serverHost = host;
 		this.serverPort = port;
 		this.serverUser = username;
 		this.serverPass = passHash;
+		this.iv = iv;
 	}
 
 	public String getServerName() {
@@ -54,6 +56,12 @@ public class Address {
 	public void setServerPass(String serverPass) {
 		this.serverPass = serverPass;
 	}
-
 	
+	public void setIV(byte[] iv){
+		this.iv = iv;
+	}
+	
+	public byte[] getIV(){
+		return this.iv;
+	}
 }
