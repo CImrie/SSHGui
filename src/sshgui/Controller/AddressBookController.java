@@ -100,7 +100,13 @@ public class AddressBookController implements Initializable {
         serverPass.setCellValueFactory(
     		new PropertyValueFactory<Address, String>("serverPass"));
         /*changes the serverPass to a password field*/
-        serverPass.setCellFactory(param -> new PasswordLabelCell());
+        //serverPass.setCellFactory(param -> new PasswordLabelCell());
+        serverPass.setCellFactory(new Callback<TableColumn<Address,String>, TableCell<Address,String>>() {         
+            @Override
+            public TableCell<Address, String> call(TableColumn<Address, String> cell) {
+                return new PasswordLabelCell();
+            }
+        });
         serverPort.setCellValueFactory(
         		new PropertyValueFactory<Address, Integer>("serverPort"));
         serverUser.setCellValueFactory(

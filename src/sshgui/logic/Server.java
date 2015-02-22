@@ -156,7 +156,7 @@ public class Server {
 	 * @param tout - an InputStreamReader enclosing the channel InputStream
 	 * @param OutputStream 
 	 */
-	public void readerThread(final InputStreamReader tout, PrintWriter out)
+	public void readerThread(final InputStreamReader tout, final PrintWriter out)
 	{
 	    Thread read2 = new Thread(){
 	    @Override

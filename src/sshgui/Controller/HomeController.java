@@ -141,10 +141,19 @@ public class HomeController implements Initializable {
 			}
     		
     	});
+    	
     }
     
-    public void appendTextHidden(String str) {
+    public void appendTextHidden(final String str) {
     	//Platform.runLater(() -> hidden = hidden + str);
+    	Platform.runLater(new Runnable(){
+
+			@Override
+			public void run() {
+				hidden = hidden + str;
+			}
+    		
+    	});
     }
 
     @FXML
